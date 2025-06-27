@@ -13,6 +13,11 @@ public class Util {
     // JDBC driver
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
 
+    // Private constructor
+    private Util() {
+
+    }
+
     // Method to get database connection
     public static Connection getConnection() {
         Connection connection = null;
