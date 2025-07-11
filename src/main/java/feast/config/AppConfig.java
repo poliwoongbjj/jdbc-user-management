@@ -1,5 +1,6 @@
 package feast.config;
 
+import feast.models.Camel8;
 import feast.models.Chicken3;
 import feast.models.Duck2;
 import org.springframework.context.annotation.Bean;
@@ -13,5 +14,10 @@ public class AppConfig {
     @Bean
     public static Duck2 getDuck(Chicken3 chicken) {
         return new Duck2(chicken);
+    }
+
+    @Bean
+    public static Camel8 getCamel() {
+        return new Camel8();
     }
 }
