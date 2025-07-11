@@ -39,14 +39,22 @@ public class MainApp {
          User userWithBMW = userService.getUserByCarModelAndSeries("BMW", 5);
          System.out.println("User with BMW 5 series: " + userWithBMW.getFirstName() + " " + userWithBMW.getLastName());
       } catch (Exception e) {
-         System.out.println("No user found with BMW 5 series");
+         System.out.println("No user found with BMW 5 series: " + e.getMessage());
       }
 
       try {
          User userWithAudi = userService.getUserByCarModelAndSeries("Audi", 6);
          System.out.println("User with Audi 6 series: " + userWithAudi.getFirstName() + " " + userWithAudi.getLastName());
       } catch (Exception e) {
-         System.out.println("No user found with Audi 6 series");
+         System.out.println("No user found with Audi 6 series: " + e.getMessage());
+      }
+
+      // Test with a non-existent car
+      try {
+         User userWithFerrari = userService.getUserByCarModelAndSeries("Ferrari", 1);
+         System.out.println("User with Ferrari 1 series: " + userWithFerrari.getFirstName() + " " + userWithFerrari.getLastName());
+      } catch (Exception e) {
+         System.out.println("No user found with Ferrari 1 series: " + e.getMessage());
       }
 
       context.close();
