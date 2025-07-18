@@ -1,150 +1,84 @@
-# Spring Dependency Injection Assignment
+# JDBC User Management with Hibernate and Spring
 
-A Spring Framework project demonstrating automatic dependency injection using `@Autowired`, `@Qualifier`, and component scanning.
+This project demonstrates a simple user management system using Java, Spring, and Hibernate ORM with a MySQL database. It features a one-to-one relationship between `User` and `Car` entities, and showcases basic CRUD operations and HQL queries.
 
-## Project Overview
-
-This project showcases Spring's dependency injection capabilities:
-- **@Autowired**: Automatic dependency injection
-- **@Qualifier**: Resolving ambiguity when multiple beans of same type exist
-- **@Component**: Automatic bean discovery through component scanning
-- **Singleton behavior**: Same bean instance injected across multiple retrievals
+## Features
+- **Spring + Hibernate** configuration (Java-based, no XML)
+- **MySQL** database integration
+- **User** entity with fields: `firstName`, `lastName`, `email`
+- **Car** entity with fields: `model`, `series`
+- **One-to-one relationship**: Each user owns one car
+- **Add and list users with cars**
+- **Query user by car model and series** using HQL
 
 ## Project Structure
-
 ```
-src/
-├── main/java/
-│   └── app/
-│       ├── Application.java           # Main application class
-│       ├── config/
-│       │   └── AppConfig.java         # Spring configuration with component scanning
-│       └── model/
-│           ├── Animal.java            # Abstract base class
-│           ├── Cat.java               # Cat component (extends Animal)
-│           ├── Dog.java               # Dog component (extends Animal)
-│           ├── AnimalsCage.java       # Main component with dependencies
-│           ├── Timer.java             # Timer component (singleton)
-│           └── DemoException.java     # Demonstrates NoUniqueBeanDefinitionException
-└── test/java/
-    └── AppTest.java                   # JUnit test verifying singleton behavior
+src/main/java/hiber/
+├── config/         # Spring and Hibernate configuration
+├── dao/            # Data access layer (UserDao)
+├── model/          # Entity classes (User, Car)
+├── service/        # Service layer (UserService)
+└── MainApp.java    # Main application entry point
+src/main/resources/
+└── db.properties   # Database and Hibernate settings
 ```
 
-## Key Components
+## Prerequisites
+- Java 8+
+- Maven
+- MySQL server (running, with a user and password set)
 
-### Classes and Their Roles
+## Setup
+1. **Clone the repository**
+2. **Configure the database**
+   - Create a database named `spring_hiber`:
+     ```sql
+     CREATE DATABASE spring_hiber;
+     ```
+   - Update `src/main/resources/db.properties` with your MySQL username and password if needed.
+3. **Build the project**
+   ```sh
+   mvn clean compile
+   mvn dependency:copy-dependencies
+   ```
 
-- **Application.java**: Main class that retrieves AnimalsCage bean 5 times
-- **AppConfig.java**: Configuration class with `@ComponentScan` for automatic bean discovery
-- **Animal.java**: Abstract base class for animals
-- **Cat.java & Dog.java**: Concrete Animal implementations marked with `@Component`
-- **AnimalsCage.java**: Main component that demonstrates dependency injection
-- **Timer.java**: Singleton component that provides consistent timestamp
-- **AppTest.java**: Test that verifies Timer singleton behavior
-
-### Dependency Injection Configuration
-
-```java
-@Component
-public class AnimalsCage {
-    
-    @Autowired
-    @Qualifier("dog")           // Resolves ambiguity between Cat and Dog
-    private Animal animal;
-    
-    @Autowired                  // Injects singleton Timer bean
-    private Timer timer;
-}
+## Running the Application
+Run the main class using:
+```sh
+java -cp "target/classes;target/dependency/*" hiber.MainApp
 ```
 
-## The NoUniqueBeanDefinitionException Problem
+## What the Application Does
+- Creates several users, each with a car
+- Saves them to the database
+- Lists all users and their cars
+- Demonstrates an HQL query to find a user by car model and series
+- Handles the one-to-one relationship automatically
 
-When you have multiple beans of the same type (Cat and Dog both extend Animal), Spring throws `NoUniqueBeanDefinitionException` because it doesn't know which one to inject.
+## Example Output
+```
+Id = 1
+First Name = User1
+Last Name = Lastname1
+Email = user1@mail.ru
+Car = BMW 5
 
-### Solution: Using @Qualifier
-
-```java
-@Autowired
-@Qualifier("dog")  // Specifies to inject the "dog" bean specifically
-private Animal animal;
+Id = 2
+First Name = User2
+Last Name = Lastname2
+Email = user2@mail.ru
+Car = Audi 6
+...
+=== Testing HQL Query ===
+User with BMW 5 series: User1 Lastname1
+User with Audi 6 series: User2 Lastname2
+No user found with Ferrari 1 series: No entity found for query
 ```
 
-Bean names default to the class name with lowercase first letter:
-- `Cat` class → `"cat"` bean name
-- `Dog` class → `"dog"` bean name
+## Notes
+- The database schema is dropped and recreated on each run (`hibernate.hbm2ddl.auto=create-drop`). For production, use `update` or `validate`.
+- The project uses only the UserService and UserDao for all operations, including car-related queries.
+- The `User` class has two constructors: one with and one without a `Car` parameter.
 
-## How to Run
-
-### Run the Application
-```bash
-mvn compile exec:java -Dexec.mainClass="app.Application"
-```
-
-### Run the Tests
-```bash
-mvn test
-```
-
-## Expected Output
-
-When running `Application.java`, you should see:
-```
-Say:
-Im a Dog
-At:
-[timestamp - same for all 5 iterations]
-________________________
-Say:
-Im a Dog
-At:
-[same timestamp as above]
-________________________
-[repeats 5 times with same timestamp]
-```
-
-## What This Demonstrates
-
-1. **Component Scanning**: `@ComponentScan` automatically discovers `@Component` classes
-2. **Dependency Injection**: `@Autowired` automatically injects dependencies
-3. **Qualifier Resolution**: `@Qualifier` resolves ambiguity between multiple beans of same type
-4. **Singleton Behavior**: Same Timer instance is injected every time, maintaining same timestamp
-5. **Polymorphism**: Animal reference holds Dog instance through dependency injection
-
-## Technologies Used
-
-- **Java 17**
-- **Spring Framework 5.3.14** (Core + Context)
-- **Maven** for dependency management
-- **JUnit 4** for testing
-
-## Learning Objectives
-
-- Understand `@Autowired` annotation for automatic dependency injection
-- Learn to resolve bean ambiguity using `@Qualifier`
-- Practice component scanning with `@ComponentScan`
-- Observe singleton behavior in Spring beans
-- Write tests to verify dependency injection behavior
-
-## Dependencies
-
-```xml
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-core</artifactId>
-    <version>5.3.14</version>
-</dependency>
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-    <version>5.3.14</version>
-</dependency>
-```
-
-## Test Verification
-
-The JUnit test (`AppTest.java`) verifies that:
-- The same Timer instance is injected into AnimalsCage every time
-- Timer maintains the same timestamp across multiple bean retrievals
-- Singleton behavior works correctly with dependency injection
-
-The test retrieves AnimalsCage bean 5 times and ensures the Timer's timestamp remains constant, proving it's the same singleton instance.
+## License
+MIT
